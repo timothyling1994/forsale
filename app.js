@@ -1,6 +1,13 @@
+
 const express = require('express');
 const app = express();
 const port = 3000;
+const { createServer } = require('node:http');
+const server = createServer(app);
+const { Server } = require("socket.io");
+const io = new Server( server,{
+  connectionStateRecovery: {}
+});
 
 var createRoomRouter = require('./routes/createRoom');
 
@@ -13,6 +20,10 @@ app.use(express.static('public'));
 
 // Basic route
 app.use('/createRoom',createRoomRouter);
+
+io.on('connection', (socket) => {
+  console.log('a user connected');
+});
 
 // Start the server
 app.listen(port, () => {
