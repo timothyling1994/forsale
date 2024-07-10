@@ -1,0 +1,11 @@
+# Node.js dependencies
+/node_modules
+
+# Optional npm cache directory
+/.npm
+
+# dotenv environment variables file
+.env
+
+# OS specific files
+.DS_Store
