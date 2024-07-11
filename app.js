@@ -4,10 +4,12 @@ const app = express();
 const port = 3000;
 const { createServer } = require('node:http');
 const server = createServer(app);
+require("./mongoConfig");
 const { Server } = require("socket.io");
 const io = new Server( server,{
   connectionStateRecovery: {}
 });
+
 
 var createRoomRouter = require('./routes/createRoom');
 
