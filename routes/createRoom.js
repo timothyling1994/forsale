@@ -4,7 +4,7 @@ var router = express.Router();
 
 let createRoomController = require('../controllers/createRoomController');
 
-router.get('/',createRoomController.createPrivateRoom);
+router.post('/',createRoomController.createPrivateRoom);
 
 
 module.exports = router; 

@@ -20,6 +20,7 @@ var createRoomRouter = require('./routes/createRoom');
 app.use(function(req,res,next){
   res.setHeader('Access-Control-Allow-Origin', 'http://localhost:3000');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST');
+  res.setHeader('Content-Type', 'application/json');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type,Accept,Origin');
   next();
 });
@@ -35,10 +36,10 @@ app.use(express.static('public'));
 app.use('/createRoom',createRoomRouter);
 //app.use('/playGame',playGameRouter);
 
-
 io.on('connection', (socket) => {
   console.log('a user connected');
 });
+
 
 // Start the server
 app.listen(port, () => {

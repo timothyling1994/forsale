@@ -3,6 +3,7 @@ var Room = require('../models/room');
 
 exports.createPrivateRoom = async function (req, res, next){
 
+	console.log("does this reach");
 	let isUnique = false;
 	let generatedId="";
 
