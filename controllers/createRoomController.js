@@ -3,7 +3,6 @@ var Room = require('../models/room');
 
 exports.createPrivateRoom = async function (req, res, next){
 
-	console.log("reach122");
 	let isUnique = false;
 	let generatedId="";
 
@@ -27,11 +26,15 @@ exports.createPrivateRoom = async function (req, res, next){
 							//roomData: roomDataId,
 						}).save();
 						console.log("Room:" + generatedId + " saved.");
+						isUnique = true;
+						return res.json({
+							createdRoom: true,
+							roomId:generatedId
+						});
 			      	}
 			      	catch (err) {
 			      		console.error('Error saving room:', err);
 			      	}
-			      	
 			    }
 			  })
 			  .catch(err => {

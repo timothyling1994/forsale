@@ -1,17 +1,28 @@
 require('dotenv').config();
 const express = require('express');
 const app = express();
-const port = 3000;
+const port = 8080;
 const { createServer } = require('node:http');
 const server = createServer(app);
 require("./mongoConfig");
-const { Server } = require("socket.io");
-const io = new Server( server,{
-  connectionStateRecovery: {}
+
+
+var io = require("socket.io")(server,{
+    cors: {
+        //origin: "https://collab-drums.netlify.app/",
+        origin: "http://localhost:3000",
+        methods: ["GET", "POST"]
+    }
 });
 
-
 var createRoomRouter = require('./routes/createRoom');
+
+app.use(function(req,res,next){
+  res.setHeader('Access-Control-Allow-Origin', 'http://localhost:3000');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type,Accept,Origin');
+  next();
+});
 
 // Middleware to parse JSON and urlencoded data
 app.use(express.json());
@@ -22,6 +33,8 @@ app.use(express.static('public'));
 
 // Basic route
 app.use('/createRoom',createRoomRouter);
+//app.use('/playGame',playGameRouter);
+
 
 io.on('connection', (socket) => {
   console.log('a user connected');
