@@ -21,7 +21,13 @@ exports.createPrivateRoom = async function (req, res, next){
 			      	console.log('No documents found');
 			      	try {
 			      		const room = await new Room({
-							connections:[{userId: req.body.userId, socketId:req.body.socketId}],
+							connections:[{userId: req.body.userId, socketId:req.body.socketId},
+								null,
+								null,
+								null,
+								null,
+								null
+							],
 							roomId:generatedId,
 							isPublic:false,
 							//roomData: roomDataId,

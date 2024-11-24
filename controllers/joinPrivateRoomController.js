@@ -5,21 +5,33 @@ exports.joinPrivateRoom = async function (req, res, next){
 	console.log("does this reach");
     console.log(req.body.roomId);
     console.log(req.body.userId);
+    console.log(req.body.playerPosition);
 
-    await new Promise((resolve,reject)=>{
-        Room.find({roomId:req.body.roomId}).exec().then(async docs => {
-            if (docs.length > 0) {
-                console.log('Documents found:', docs);
+    await new Promise((resolve, reject) => {
+        Room.findOne({ roomId: req.body.roomId }).exec().then(async room => {
+            if (room) {
+                console.log('Document found:', room);
 
-                if(docs[0].connections.length > 6) {
+                if (req.body.playerPosition < 0 || req.body.playerPosition > 5) {
                     return res.status(400).json({
                         roomUpdated: false,
-                        message: "Room is full"
+                        message: "Invalid player position"
                     });
                 }
 
-                docs[0].connections.push({userId:req.body.userId, socketId:req.body.socketId});
-                await docs[0].save();
+                if (room.connections[req.body.playerPosition] !== null) {
+                    return res.status(400).json({
+                        roomUpdated: false,
+                        message: "Position already taken"
+                    });
+                }
+
+                room.connections[req.body.playerPosition] = { 
+                    userId: req.body.userId, 
+                    socketId: req.body.socketId 
+                };
+                await room.save();
+                console.log(room);
                 resolve();
             }
         });
