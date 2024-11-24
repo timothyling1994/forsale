@@ -16,6 +16,7 @@ var io = require("socket.io")(server,{
 });
 
 var createRoomRouter = require('./routes/createRoom');
+var joinPrivateRoomRouter = require('./routes/joinPrivateRoom');
 
 app.use(function(req,res,next){
   res.setHeader('Access-Control-Allow-Origin', 'http://localhost:3000');
@@ -34,6 +35,7 @@ app.use(express.static('public'));
 
 // Basic route
 app.use('/createRoom',createRoomRouter);
+app.use('/joinPrivateRoom',joinPrivateRoomRouter);
 //app.use('/playGame',playGameRouter);
 
 io.on('connection', (socket) => {
