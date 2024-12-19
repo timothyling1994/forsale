@@ -40,6 +40,23 @@ app.use('/joinPrivateRoom',joinPrivateRoomRouter);
 
 io.on('connection', (socket) => {
   console.log('a user connected');
+
+  socket.on('joinRoom', (roomId) => {
+    socket.join(roomId);
+    
+    // Notify everyone in the room
+    io.to(roomId).emit('playerJoined', {
+        socketId: socket.id,
+        // other data...
+    });
+    
+    /**socket.on('disconnect', () => {
+      // Notify others
+      io.to(roomId).emit('playerDisconnected', {
+        socketId: socket.id
+      });
+    });**/
+  });
 });
 
 
