@@ -28,7 +28,8 @@ exports.joinPrivateRoom = async function (req, res, next){
 
                 room.connections[req.body.playerPosition] = { 
                     userId: req.body.userId, 
-                    socketId: req.body.socketId 
+                    socketId: req.body.socketId,
+                    isAdmin: req.body.isAdmin 
                 };
                 await room.save();
                 console.log(room);

@@ -39,7 +39,7 @@ app.use('/joinPrivateRoom',joinPrivateRoomRouter);
 //app.use('/playGame',playGameRouter);
 
 io.on('connection', (socket) => {
-  console.log('a user connected');
+  console.log('user connected: ' + socket.id);
 
   socket.on('joinRoom', (roomId) => {
     socket.join(roomId);
