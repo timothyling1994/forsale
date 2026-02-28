@@ -10,13 +10,11 @@ exports.createPrivateRoom = async function (req, res, next){
 		let retries = 0;
 
 
-		console.log("socketid: " + req.body.socketId);
-
 		while (retries < maxRetries) {
 			try {
 				const room = await new Room({
 					connections: [
-						{userId: req.body.userId, socketId: req.body.socketId},
+						{userId: req.body.userId, isAdmin: true},
 						null,
 						null,
 						null,

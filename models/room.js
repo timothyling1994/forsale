@@ -9,7 +9,6 @@ const RoomSchema = new Schema({
 		type: Array(MAX_PLAYERS).fill({
 			type: new Schema({
 				userId: { type: String, default: null },
-				socketId: { type: String, default: null },
 				isAdmin: { type: Boolean, default: false }
 			}, { _id: false }),
 			default: null

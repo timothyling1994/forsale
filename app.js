@@ -15,6 +15,9 @@ var io = require("socket.io")(server,{
     }
 });
 
+// Make io accessible from route controllers via req.app.get('io')
+app.set('io', io);
+
 var createRoomRouter = require('./routes/createRoom');
 var joinPrivateRoomRouter = require('./routes/joinPrivateRoom');
 
@@ -41,21 +44,38 @@ app.use('/joinPrivateRoom',joinPrivateRoomRouter);
 io.on('connection', (socket) => {
   console.log('user connected: ' + socket.id);
 
-  socket.on('joinRoom', (roomId) => {
+  socket.on('joinRoom', ({ roomId, userId, playerPosition }) => {
     socket.join(roomId);
-    
-    // Notify everyone in the room
+    console.log(`Socket ${socket.id} joined room ${roomId}`);
+
+    // Broadcast to everyone in the room (including the sender)
     io.to(roomId).emit('playerJoined', {
-        socketId: socket.id,
-        // other data...
+      userId,
+      playerPosition,
+      socketId: socket.id
     });
-    
-    /**socket.on('disconnect', () => {
-      // Notify others
-      io.to(roomId).emit('playerDisconnected', {
+  });
+
+  socket.on('disconnect', () => {
+    console.log('user disconnected: ' + socket.id);
+
+    // socket.rooms is already empty on disconnect, but we can
+    // broadcast to all rooms this socket was in. Socket.IO
+    // automatically removes the socket from its rooms on disconnect,
+    // but the 'disconnecting' event fires before that happens.
+  });
+
+  // Use 'disconnecting' to broadcast before the socket leaves its rooms
+  socket.on('disconnecting', () => {
+    for (const roomId of socket.rooms) {
+      // Skip the socket's own room (each socket auto-joins a room matching its id)
+      if (roomId === socket.id) continue;
+
+      socket.to(roomId).emit('playerDisconnected', {
         socketId: socket.id
       });
-    });**/
+      console.log(`Socket ${socket.id} disconnecting from room ${roomId}`);
+    }
   });
 });
 
