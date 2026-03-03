@@ -44,16 +44,35 @@ app.use('/joinPrivateRoom',joinPrivateRoomRouter);
 io.on('connection', (socket) => {
   console.log('user connected: ' + socket.id);
 
+  // Return which player positions are already occupied in a room (using socket.data)
+  socket.on('getPlayersInRoom', async ({ roomId }) => {
+    try {
+      const sockets = await io.in(roomId).fetchSockets();
+      const players = sockets
+        .filter(s => s.data.playerPosition !== null && s.data.playerPosition !== undefined)
+        .map(s => ({ playerPosition: s.data.playerPosition, userId: s.data.userId }));
+      console.log(`Players in room ${roomId}:`, players);
+      socket.emit('playersInRoomResponse', { players });
+    } catch (err) {
+      console.error('Error fetching players in room:', err);
+      socket.emit('playersInRoomResponse', { players: [] });
+    }
+  });
+
   socket.on('joinRoom', ({ roomId, userId, playerPosition }) => {
     socket.join(roomId);
-    console.log(`Socket ${socket.id} joined room ${roomId}`);
+    socket.data.userId = userId;
+    socket.data.playerPosition = playerPosition;
+    console.log(`Socket ${socket.id} joined room ${roomId} at position ${playerPosition}`);
 
-    // Broadcast to everyone in the room (including the sender)
-    io.to(roomId).emit('playerJoined', {
-      userId,
-      playerPosition,
-      socketId: socket.id
-    });
+    // Only broadcast playerJoined when an actual position is claimed (not page-load joins with null)
+    if (playerPosition !== null && playerPosition !== undefined) {
+      io.to(roomId).emit('playerJoined', {
+        userId,
+        playerPosition,
+        socketId: socket.id
+      });
+    }
   });
 
   socket.on('disconnect', () => {
