@@ -50,7 +50,7 @@ io.on('connection', (socket) => {
       const sockets = await io.in(roomId).fetchSockets();
       const players = sockets
         .filter(s => s.data.playerPosition !== null && s.data.playerPosition !== undefined)
-        .map(s => ({ playerPosition: s.data.playerPosition, userId: s.data.userId }));
+        .map(s => ({ playerPosition: s.data.playerPosition, userId: s.data.userId, socketId: s.id }));
       console.log(`Players in room ${roomId}:`, players);
       socket.emit('playersInRoomResponse', { players });
     } catch (err) {
@@ -91,7 +91,9 @@ io.on('connection', (socket) => {
       if (roomId === socket.id) continue;
 
       socket.to(roomId).emit('playerDisconnected', {
-        socketId: socket.id
+        socketId: socket.id,
+        userId: socket.data.userId,
+        playerPosition: socket.data.playerPosition
       });
       console.log(`Socket ${socket.id} disconnecting from room ${roomId}`);
     }
